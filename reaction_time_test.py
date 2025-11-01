@@ -23,6 +23,14 @@ def set_config():
     READY = 1
     RESULT = 2
 
+    state = WAITING
+    reaction_time = None
+    start_time = None
+    wait_delay = random.uniform(2, 5)
+    square_color = red_color
+
+    return state, reaction_time, start_time, wait_delay, square_color
+
 def set_joystick():
     joystick_maybe = get_joystick_connected()
     if joystick_maybe is None:
@@ -38,68 +46,67 @@ def set_colors():
     green_color = (0, 255, 0)
     black_color = (0, 0, 0)
 
-set_screen_config()
-set_config()
-joystick = set_joystick()
-set_colors()
-
-
-state = WAITING
-reaction_time = None
-start_time = None
-wait_delay = random.uniform(2, 5)
-square_color = red_color
-
 def draw_text(text, y):
     text_surface = font.render(text, True, (255, 255, 255))
     rect = text_surface.get_rect(center=(300, y))
     screen.blit(text_surface, rect)
 
-running = True
-timer_started = False
-change_time = time.time() + wait_delay
+def main(joystick_player_one, config):
+    state, reaction_time, start_time, wait_delay, square_color = config
 
-while running:
-    screen.fill(black_color)
+    running = True
+    timer_started = False
+    change_time = time.time() + wait_delay
 
-    # Center square
-    pygame.draw.rect(screen, square_color, (200, 80, 200, 200))
+    while running:
+        screen.fill(black_color)
 
-    if state == WAITING:
-        draw_text("Espere o verde...", 300)
-    elif state == READY:
-        draw_text("APERTE AGORA!", 300)
-    elif state == RESULT:
-        draw_text(f"Tempo: {reaction_time:.3f}s", 300)
-        draw_text("Aperte qualquer botão para reiniciar", 340)
+        # Center square
+        pygame.draw.rect(screen, square_color, (200, 80, 200, 200))
 
-    pygame.display.flip()
-    fps_clock.tick(60)
+        if state == WAITING:
+            draw_text("Espere o verde...", 300)
+        elif state == READY:
+            draw_text("APERTE AGORA!", 300)
+        elif state == RESULT:
+            draw_text(f"Tempo: {reaction_time:.3f}s", 300)
+            draw_text("Aperte qualquer botão para reiniciar", 340)
 
-    for event in pygame.event.get():
-        if event.type == pygame.QUIT:
-            running = False
+        pygame.display.flip()
+        fps_clock.tick(60)
 
-        # Detecta qualquer botão do controle
-        if event.type == pygame.JOYBUTTONDOWN:
-            if state == READY:
-                reaction_time = time.time() - start_time
-                state = RESULT
-                square_color = blue_color  # Azul após resposta
-            elif state == RESULT:
-                # Reinicia
-                wait_delay = random.uniform(2, 5)
-                change_time = time.time() + wait_delay
-                state = WAITING
-                square_color = red_color
-            elif state == WAITING:
-                # Se apertar antes do verde, ignora
-                pass
+        for event in pygame.event.get():
+            if event.type == pygame.QUIT:
+                running = False
 
-    # Troca para verde quando chegar o momento
-    if state == WAITING and time.time() >= change_time:
-        square_color = green_color
-        state = READY
-        start_time = time.time()
+            # Detecta qualquer botão do controle
+            if event.type == pygame.JOYBUTTONDOWN:
+                if state == READY:
+                    reaction_time = time.time() - start_time
+                    state = RESULT
+                    square_color = blue_color  # Azul após resposta
+                elif state == RESULT:
+                    # Reinicia
+                    wait_delay = random.uniform(2, 5)
+                    change_time = time.time() + wait_delay
+                    state = WAITING
+                    square_color = red_color
+                elif state == WAITING:
+                    # Se apertar antes do verde, ignora
+                    pass
 
-pygame.quit()
+        # Troca para verde quando chegar o momento
+        if state == WAITING and time.time() >= change_time:
+            square_color = green_color
+            state = READY
+            start_time = time.time()
+
+    pygame.quit()
+
+
+
+set_screen_config()
+set_colors()
+config_values = set_config()
+joystick = set_joystick()
+main(joystick, config_values)
