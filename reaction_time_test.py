@@ -54,7 +54,6 @@ def main(joystick_player_one, config):
     state, reaction_time, start_time, wait_delay, square_color = config
 
     running = True
-    timer_started = False
     change_time = time.time() + wait_delay
 
     while running:
