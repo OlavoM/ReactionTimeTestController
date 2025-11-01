@@ -7,7 +7,13 @@ from controls_util import get_joystick_connected
 pygame.init()
 pygame.display.set_caption("Reaction Time Test - Controller")
 
-screen = pygame.display.set_mode((600, 400))
+def  set_screen_config():
+    global screen
+    SCREEN_HEIGHT = 400
+    SCREEN_WIDTH = 600
+    screen = pygame.display.set_mode((SCREEN_WIDTH,SCREEN_HEIGHT))
+
+set_screen_config()
 
 font = pygame.font.Font(None, 48)
 clock = pygame.time.Clock()
