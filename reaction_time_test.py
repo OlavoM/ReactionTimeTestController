@@ -13,10 +13,14 @@ def  set_screen_config():
     SCREEN_WIDTH = 600
     screen = pygame.display.set_mode((SCREEN_WIDTH,SCREEN_HEIGHT))
 
-set_screen_config()
+def set_config():
+    global font, fps_clock
+    font = pygame.font.Font(None, 48)
+    fps_clock = pygame.time.Clock()
 
-font = pygame.font.Font(None, 48)
-clock = pygame.time.Clock()
+set_screen_config()
+set_config()
+
 
 # Conecta o controle
 joystick = get_joystick_connected()
@@ -59,7 +63,7 @@ while running:
         draw_text("Aperte qualquer botão para reiniciar", 340)
 
     pygame.display.flip()
-    clock.tick(60)
+    fps_clock.tick(60)
 
     for event in pygame.event.get():
         if event.type == pygame.QUIT:
