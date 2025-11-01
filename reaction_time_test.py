@@ -42,7 +42,7 @@ while running:
     screen.fill((0, 0, 0))
 
     # Quadrado central
-    pygame.draw.rect(screen, color, (250, 150, 100, 100))
+    pygame.draw.rect(screen, color, (200, 80, 200, 200))
 
     if state == WAITING:
         draw_text("Espere o verde...", 300)
