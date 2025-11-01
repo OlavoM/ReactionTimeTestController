@@ -3,7 +3,6 @@ import random
 import time
 from controls_util import get_joystick_connected
 
-# Inicializa o pygame
 pygame.init()
 pygame.display.set_caption("Reaction Time Test - Controller")
 
@@ -65,12 +64,12 @@ def main(joystick_player_one, config):
         pygame.draw.rect(screen, square_color, (200, 80, 200, 200))
 
         if state == WAITING:
-            draw_text("Espere o verde...", 300)
+            draw_text("Wait for green...", 300)
         elif state == READY:
-            draw_text("APERTE AGORA!", 300)
+            draw_text("PRESS NOW!", 300)
         elif state == RESULT:
-            draw_text(f"Tempo: {reaction_time:.3f}s", 300)
-            draw_text("Aperte qualquer botão para reiniciar", 340)
+            draw_text(f"Reaction time: {reaction_time * 1000:.0f} ms", 300)
+            draw_text("Press any button to restart", 340)
 
         pygame.display.flip()
         fps_clock.tick(60)
@@ -79,23 +78,23 @@ def main(joystick_player_one, config):
             if event.type == pygame.QUIT:
                 running = False
 
-            # Detecta qualquer botão do controle
+            # Detect any button from the joystick
             if event.type == pygame.JOYBUTTONDOWN:
                 if state == READY:
                     reaction_time = time.time() - start_time
                     state = RESULT
-                    square_color = blue_color  # Azul após resposta
+                    square_color = blue_color
                 elif state == RESULT:
-                    # Reinicia
+                    # Restart
                     wait_delay = random.uniform(2, 5)
                     change_time = time.time() + wait_delay
                     state = WAITING
                     square_color = red_color
                 elif state == WAITING:
-                    # Se apertar antes do verde, ignora
+                    # If you press before the green, it ignores.
                     pass
 
-        # Troca para verde quando chegar o momento
+        # Change to green when its the right time
         if state == WAITING and time.time() >= change_time:
             square_color = green_color
             state = READY
