@@ -18,26 +18,37 @@ def set_config():
     font = pygame.font.Font(None, 48)
     fps_clock = pygame.time.Clock()
 
+    global WAITING, READY, RESULT
+    WAITING = 0
+    READY = 1
+    RESULT = 2
+
+def set_joystick():
+    joystick_maybe = get_joystick_connected()
+    if joystick_maybe is None:
+        print("No controller detected")
+        exit()
+    else:
+        return joystick_maybe
+
+def set_colors():
+    global red_color, blue_color, green_color, black_color
+    red_color = pygame.Color(255, 0, 0)   
+    blue_color = (0, 0, 255)
+    green_color = (0, 255, 0)
+    black_color = (0, 0, 0)
+
 set_screen_config()
 set_config()
+joystick = set_joystick()
+set_colors()
 
-
-# Conecta o controle
-joystick = get_joystick_connected()
-if joystick is None:
-    print("Nenhum controle detectado!")
-    exit()
-
-# Estados do jogo
-WAITING = 0
-READY = 1
-RESULT = 2
 
 state = WAITING
 reaction_time = None
 start_time = None
 wait_delay = random.uniform(2, 5)
-color = (255, 0, 0)  # Vermelho
+square_color = red_color
 
 def draw_text(text, y):
     text_surface = font.render(text, True, (255, 255, 255))
@@ -49,10 +60,10 @@ timer_started = False
 change_time = time.time() + wait_delay
 
 while running:
-    screen.fill((0, 0, 0))
+    screen.fill(black_color)
 
-    # Quadrado central
-    pygame.draw.rect(screen, color, (200, 80, 200, 200))
+    # Center square
+    pygame.draw.rect(screen, square_color, (200, 80, 200, 200))
 
     if state == WAITING:
         draw_text("Espere o verde...", 300)
@@ -74,20 +85,20 @@ while running:
             if state == READY:
                 reaction_time = time.time() - start_time
                 state = RESULT
-                color = (0, 0, 255)  # Azul após resposta
+                square_color = blue_color  # Azul após resposta
             elif state == RESULT:
                 # Reinicia
                 wait_delay = random.uniform(2, 5)
                 change_time = time.time() + wait_delay
                 state = WAITING
-                color = (255, 0, 0)
+                square_color = red_color
             elif state == WAITING:
                 # Se apertar antes do verde, ignora
                 pass
 
     # Troca para verde quando chegar o momento
     if state == WAITING and time.time() >= change_time:
-        color = (0, 255, 0)
+        square_color = green_color
         state = READY
         start_time = time.time()
 
