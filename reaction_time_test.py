@@ -39,14 +39,15 @@ def set_joystick():
         return joystick_maybe
 
 def set_colors():
-    global red_color, blue_color, green_color, black_color
+    global red_color, blue_color, green_color, black_color, bg_color
     red_color = pygame.Color(255, 0, 0)   
     blue_color = (0, 0, 255)
     green_color = (0, 255, 0)
     black_color = (0, 0, 0)
+    bg_color = (230, 232, 244)
 
 def draw_text(text, y):
-    text_surface = font.render(text, True, (255, 255, 255))
+    text_surface = font.render(text, True, black_color)
     rect = text_surface.get_rect(center=(300, y))
     screen.blit(text_surface, rect)
 
@@ -57,7 +58,7 @@ def main(joystick_player_one, config):
     change_time = time.time() + wait_delay
 
     while running:
-        screen.fill(black_color)
+        screen.fill(bg_color)
 
         # Center square
         pygame.draw.rect(screen, square_color, (200, 80, 200, 200))
