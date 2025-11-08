@@ -17,10 +17,11 @@ def set_config():
     font = pygame.font.Font(None, 48)
     fps_clock = pygame.time.Clock()
 
-    global WAITING, READY, RESULT
+    global WAITING, READY, RESULT, EARLY
     WAITING = 0
     READY = 1
     RESULT = 2
+    EARLY = 3
 
     state = WAITING
     reaction_time = None
@@ -39,9 +40,10 @@ def set_joystick():
         return joystick_maybe
 
 def set_colors():
-    global red_color, blue_color, green_color, black_color, bg_color
+    global red_color, blue_color, medium_blue_color, green_color, black_color, bg_color
     red_color = pygame.Color(255, 0, 0)   
     blue_color = (0, 0, 255)
+    medium_blue_color = (75, 75, 255)
     green_color = (0, 255, 0)
     black_color = (0, 0, 0)
     bg_color = (230, 232, 244)
@@ -58,7 +60,7 @@ def main(joystick_player_one, config):
     change_time = time.time() + wait_delay
 
     while running:
-        screen.fill(bg_color)
+        screen.fill(medium_blue_color if state == EARLY else bg_color)
 
         # Center square
         pygame.draw.rect(screen, square_color, (200, 80, 200, 200))
@@ -69,6 +71,9 @@ def main(joystick_player_one, config):
             draw_text("PRESS NOW!", 300)
         elif state == RESULT:
             draw_text(f"Reaction time: {reaction_time * 1000:.0f} ms", 300)
+            draw_text("Press any button to restart", 340)
+        elif state == EARLY:
+            draw_text("Too soon!", 300)
             draw_text("Press any button to restart", 340)
 
         pygame.display.flip()
@@ -91,8 +96,13 @@ def main(joystick_player_one, config):
                     state = WAITING
                     square_color = red_color
                 elif state == WAITING:
-                    # If you press before the green, it ignores.
-                    pass
+                    state = EARLY
+                    square_color = medium_blue_color
+                elif state == EARLY:
+                    wait_delay = random.uniform(2, 5)
+                    change_time = time.time() + wait_delay
+                    state = WAITING
+                    square_color = red_color
 
         # Change to green when its the right time
         if state == WAITING and time.time() >= change_time:
